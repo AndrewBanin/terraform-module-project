@@ -69,7 +69,7 @@ resource "aws_instance" "web_server" {
   associate_public_ip_address = true
   instance_type               = var.instance_type
   key_name                    = var.key_name
-  subnet_id                   = var.vpc.private_subnets[0]
+  subnet_id                   = var.vpc.public_subnets[0]
   vpc_security_group_ids      = [var.web_sg_id]
   user_data                   = file("wordpress-frontend.sh")
 

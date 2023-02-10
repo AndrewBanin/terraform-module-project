@@ -1,7 +1,7 @@
 iversion: "3.8"
 services:
    petclinic:
-     image: charityngenge/petclinic:latest
+     image: banina/spring-clinic:1.0.0-RC-1
      ports:
        - "80:8080"
 

@@ -2,21 +2,21 @@
 # Install MySQL
 # # Installation of mysql
 echo "Installing mysql repo packages"
-yum install -y https://repo.mysql.com//mysql80-community-release-el7-5.noarch.rpm
+sudo yum install -y https://repo.mysql.com//mysql80-community-release-el7-5.noarch.rpm
 wait
-yum install -y mysql-server
+sudo yum install -y mysql-server
 
 ## Starting mysql server (first run)'
-systemctl start mysqld
+sudo systemctl start mysqld
 
 ## Getting mysql temp root password
-tempRootDBPass="`grep 'temporary.*root@localhost' /var/log/mysqld.log | tail -n 1 | sed 's/.*root@localhost: //'`"
+tempRootDBPass="`sudo grep 'temporary.*root@localhost' /var/log/mysqld.log | tail -n 1 | sed 's/.*root@localhost: //'`"
 echo "myslq temp password is $tempRootDBPass"
 
 ## Setting up new mysql server root password'
-systemctl stop mysqld.service
-rm -rf /var/lib/mysql/*logfile*
-systemctl start mysqld.service
+sudo systemctl stop mysqld.service
+sudo rm -rf /var/lib/mysql/*logfile*
+sudo systemctl start mysqld.service
 mysqladmin -u root --password="$tempRootDBPass" password "$MYSQLROOTPASS"
 mysql -u root --password="$MYSQLROOTPASS" -e <<-EOSQL
     DELETE FROM mysql.user WHERE User='';
@@ -24,14 +24,16 @@ mysql -u root --password="$MYSQLROOTPASS" -e <<-EOSQL
     DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
     DELETE FROM mysql.user where user != 'mysql.sys';
     FLUSH PRIVILEGES;
+    EXIT
 EOSQL
-systemctl status mysqld.service
+
+wait
 
 ## Creating database, user and password
-mysql -uroot -p$MYSQLROOTPASS <<QUERY_INPUT
-CREATE USER '$ENVIRONMENT_NAME'@'%' IDENTIFIED BY '$DBPASS';
-CREATE DATABASE ${ENVIROMENT_NAME}-db;
-GRANT ALL PRIVILEGES ON ${ENVIRONMENT_NAME}-db.* TO '$ENVIRONMENT_NAME'@'%';
-FLUSH PRIVILEGES;
-EXIT
+mysql -u root -p$MYSQLROOTPASS <<QUERY_INPUT
+    CREATE USER '$DBUSER'@'%' IDENTIFIED BY '$DBPASS';
+    CREATE DATABASE $DBNAME;
+    GRANT ALL PRIVILEGES ON $DBNAME.* TO '$DBUSER'@'%';
+    FLUSH PRIVILEGES;
+    EXIT
 QUERY_INPUT
