@@ -18,7 +18,15 @@ pipeline{
 
         string(name: "JENKINS_IP",
 	       defaultValue: "",
-	       description: "Enter your Jenkins server ip address" )  
+	       description: "Enter your Jenkins server ip address" )
+            
+        string(name: "DBNAME",
+	       defaultValue: "",
+	       description: "Enter your database name" ) 
+
+        string(name: "DBUSER",
+	       defaultValue: "",
+	       description: "Enter your database user" )    
            
         string(name: "DBPASS",
 	       defaultValue: "",
