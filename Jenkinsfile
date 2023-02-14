@@ -73,15 +73,16 @@ pipeline{
             }
         }
 
-       // stage('CleanWorkSpace'){
-       //     steps {
-       //         cleanWs()
-       //     }
-       // }
+         //stage('CleanWorkSpace'){
+            //steps {
+                //cleanWs()
+            //}
+        //}
         //stage('Get database IP') {
-                        //steps{
+			//steps{
                 //DBHOST = $(sh  "aws ec2 describe-instances --filters Name=tag:Name,Values='${ENVIRONMENT_NAME}-db_server' --query 'Reservations[].Instances[].PrivateIpAddress' --output text")
                 //sh "echo ${DBHOST}"
-                        //}
-                //}
+			//}
+		//}
     }
+}
