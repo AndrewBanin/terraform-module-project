@@ -97,14 +97,13 @@ resource "aws_instance" "web_server2" {
   provisioner "file" {
     source      = "./docker-compose.yml"
     destination = "/home/ec2-user/docker-compose.yml"
+  }
 
   //chmod docker-compose.yml +x executable permissions
   provisioner "remote-exec" {
     inline = ["chmod +x ~/docker-compose.yml"]
 
   }
-
-}
 
 // Configure database subnet
 resource "aws_instance" "db_server" {
