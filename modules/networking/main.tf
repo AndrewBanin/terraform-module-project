@@ -28,7 +28,7 @@ resource "aws_security_group" "allow_ssh_pub" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["74.105.68.12/32"]
+    cidr_blocks = ["74.105.68.200/32"]
   }
 
    ingress {

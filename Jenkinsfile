@@ -53,27 +53,23 @@ pipeline{
                 sh 'envsubst < modules/networking/main.tf > modules/networking/main'
                 sh 'rm -rf modules/networking/main.tf '
                 sh 'mv modules/networking/main modules/networking/main.tf'
+                sh "envsubst '\$DBUSER\$DBNAME\$DBPASS'< wordpress-frontend.sh > fe"
+                sh 'rm -rf wordpress-frontend.sh '
+                sh 'mv fe wordpress-frontend.sh '
                 sh "envsubst '\$DBUSER\$DBNAME\$DBPASS\$MYSQLROOTPASS' <mysql_bootstrap.sh  > mysql"
                 sh 'rm -rf mysql_bootstrap.sh '
                 sh 'mv mysql mysql_bootstrap.sh '
             }
-        }      
+        }
         stage('terraform init'){
             steps{
                 sh 'terraform init'
             }
-        }  
+        }
         stage('terraform apply'){
             steps{
                 sh 'terraform apply --auto-approve'
                 sh 'cat ${ENVIRONMENT_NAME}-key.pem'
-                DBHOST=sh("aws ec2 describe-instances --filters Name=tag:Name,Values=${ENVIRONMENT_NAME}-db_server --query Reservations[].Instances[].PrivateIpAddress --output text")
-                sh "export $DBHOST"
-                sh "envsubst < wordpress-frontend.sh > fe"
-                sh 'rm -rf wordpress-frontend.sh '
-                sh 'mv fe wordpress-frontend.sh'
-                sh 'terraform init'
-                sh 'terraform apply --auto-approve'
             }
         }
 
@@ -83,10 +79,9 @@ pipeline{
        //     }
        // }
         //stage('Get database IP') {
-			//steps{
+                        //steps{
                 //DBHOST = $(sh  "aws ec2 describe-instances --filters Name=tag:Name,Values='${ENVIRONMENT_NAME}-db_server' --query 'Reservations[].Instances[].PrivateIpAddress' --output text")
                 //sh "echo ${DBHOST}"
-			//}
-		//}
+                        //}
+                //}
     }
-}
