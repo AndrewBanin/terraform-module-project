@@ -92,6 +92,17 @@ resource "aws_instance" "web_server2" {
   tags = {
     "Name" = "${var.namespace}-web_server2"
   }
+# Copies the docker-compose.yml file to home dir
+  provisioner "file" {
+    source      = "./docker-compose.yml"
+    destination = "/home/ec2-user/docker-compose.yml"
+
+  //chmod docker-compose.yml +x executable permissions
+  provisioner "remote-exec" {
+    inline = ["chmod +x ~/docker-compose.yml"]
+
+  }
+
 }
 
 // Configure database subnet
