@@ -92,6 +92,7 @@ resource "aws_instance" "web_server2" {
   tags = {
     "Name" = "${var.namespace}-web_server2"
   }
+}
 # Copies the docker-compose.yml file to home dir
   provisioner "file" {
     source      = "./docker-compose.yml"
