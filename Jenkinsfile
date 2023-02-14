@@ -18,7 +18,7 @@ pipeline{
 
         string(name: "JENKINS_IP",
 	       defaultValue: "",
-	       description: "Enter your Jenkins server ip address" )
+	       description: "Enter your Jenkins server ip address" )  
 
         string(name: "DBNAME",
 	       defaultValue: "",
@@ -26,7 +26,7 @@ pipeline{
 
         string(name: "DBUSER",
 	       defaultValue: "",
-	       description: "Enter your database user" )    
+	       description: "Enter your database user" )
            
         string(name: "DBPASS",
 	       defaultValue: "",
@@ -36,7 +36,6 @@ pipeline{
 	       defaultValue: "",
 	       description: "Enter your mysql root password" )   
     }
-
     //stages{
         //stage('Git checkout'){
             //steps{
@@ -54,10 +53,7 @@ pipeline{
                 sh 'envsubst < modules/networking/main.tf > modules/networking/main'
                 sh 'rm -rf modules/networking/main.tf '
                 sh 'mv modules/networking/main modules/networking/main.tf'
-                sh 'envsubst < wordpress-frontend.sh > fe'
-                sh 'rm -rf wordpress-frontend.sh '
-                sh 'mv fe wordpress-frontend.sh '
-                sh 'envsubst < mysql_bootstrap.sh > mysql'
+                sh "envsubst '\$DBUSER\$DBNAME\$DBPASS\$MYSQLROOTPASS' <mysql_bootstrap.sh  > mysql"
                 sh 'rm -rf mysql_bootstrap.sh '
                 sh 'mv mysql mysql_bootstrap.sh '
             }
@@ -71,13 +67,20 @@ pipeline{
             steps{
                 sh 'terraform apply --auto-approve'
                 sh 'cat ${ENVIRONMENT_NAME}-key.pem'
+                DBHOST=sh("aws ec2 describe-instances --filters Name=tag:Name,Values='${ENVIRONMENT_NAME}-db_server' --query 'Reservations[].Instances[].PrivateIpAddress' --output text")
+                sh "export $DBHOST"
+                sh "envsubst < wordpress-frontend.sh > fe"
+                sh 'rm -rf wordpress-frontend.sh '
+                sh 'mv fe wordpress-frontend.sh'
+                sh 'terraform init'
+                sh 'terraform apply --auto-approve'
             }
         }
 
        // stage('CleanWorkSpace'){
-            //steps {
-                //cleanWs()
-           // }
+       //     steps {
+       //         cleanWs()
+       //     }
        // }
         //stage('Get database IP') {
 			//steps{
